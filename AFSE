@@ -1,0 +1,76 @@
+-- AFSE | Anime Fighting Simulator Endless - Main Loader
+-- by VisualDoggyStudios
+
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "AFSE | #1 Script " .. Fluent.Version,
+    SubTitle = "by VisualDoggyStudios",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = false,
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+-- === Manual Tab Creation (No Duplicates Ever) ===
+local Tabs = {
+    Autofarm  = Window:AddTab({ Title = "Autofarm",  Icon = "bot" }),
+    Fruits    = Window:AddTab({ Title = "Fruits",    Icon = "apple" }),
+    Mobs      = Window:AddTab({ Title = "Mobs",      Icon = "swords" }),
+    Chikara   = Window:AddTab({ Title = "Chikara",   Icon = "gift" }),
+    Teleports = Window:AddTab({ Title = "Teleports", Icon = "map-pin" }),
+    ESP       = Window:AddTab({ Title = "ESP",       Icon = "eye" }),
+    Codes     = Window:AddTab({ Title = "Codes",     Icon = "ticket" }),
+    Misc      = Window:AddTab({ Title = "Misc",      Icon = "box" }),
+    Settings  = Window:AddTab({ Title = "Settings",  Icon = "settings" })
+}
+
+-- Personal Extras tab
+if game.Players.LocalPlayer.Name == "20pancake14" then
+    Tabs.Extras = Window:AddTab({ Title = "Extras", Icon = "crown" })
+end
+
+-- === Discord Invite Copy ===
+spawn(function()
+    setclipboard("https://discord.gg/bZv3Ceagqu")
+end)
+
+-- === Clean Load Notification ===
+Fluent:Notify({
+    Title = "AFSE Loaded!",
+    Content = "All features ready.\nDiscord invite copied.\nGo dominate the game!",
+    Duration = 8
+})
+
+-- === Load Tab Content via ScriptHub Loadstrings ===
+local function loadContent(url)
+    spawn(function()
+        pcall(function()
+            loadstring(game:HttpGet(url))()(Tabs, Fluent)
+        end)
+    end)
+end
+
+loadContent("https://raw.githubusercontent.com/VisualDoggyStudios/Anime-Fighting-Simulator-Endless/refs/heads/main/obfuscated_autofarm.lua")
+loadContent("https://raw.githubusercontent.com/VisualDoggyStudios/Anime-Fighting-Simulator-Endless/refs/heads/main/obfuscated_fruits.lua")
+loadContent("https://raw.githubusercontent.com/VisualDoggyStudios/Anime-Fighting-Simulator-Endless/refs/heads/main/obfuscated_mobs.lua")
+loadContent("https://raw.githubusercontent.com/VisualDoggyStudios/Anime-Fighting-Simulator-Endless/refs/heads/main/obfuscated_chikara.lua")
+loadContent("https://raw.githubusercontent.com/VisualDoggyStudios/Anime-Fighting-Simulator-Endless/refs/heads/main/obfuscated_teleports.lua")
+loadContent("https://raw.githubusercontent.com/VisualDoggyStudios/Anime-Fighting-Simulator-Endless/refs/heads/main/obfuscated_ESP.lua")
+loadContent("https://raw.githubusercontent.com/VisualDoggyStudios/Anime-Fighting-Simulator-Endless/refs/heads/main/obfuscated_codes.lua")  -- Now via loadstring
+loadContent("https://raw.githubusercontent.com/VisualDoggyStudios/Anime-Fighting-Simulator-Endless/refs/heads/main/obfuscated_misc.lua")
+
+if Tabs.Extras then
+    loadContent("https://raw.githubusercontent.com/VisualDoggyStudios/ScriptHub/refs/heads/main/Extras.lua")
+end
+
+-- === Settings Tab (Manual Theme Selector) ===
+Tabs.Settings:AddDropdown("ThemeSelector", {
+    Title = "UI Theme",
+    Values = {"Dark", "Light", "Aqua", "Amethyst", "Rose"},
+    Default = "Dark",
+    Callback = function(theme)
+        Fluent:SetTheme(theme)
+    end
+})
