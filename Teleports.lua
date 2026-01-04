@@ -13,6 +13,7 @@ return function(Tabs, Fluent)
     })
 
     local trainingFolder = game:GetService("Workspace").Scriptable.TrainingAreas
+    local questFolder = game:GetService("Workspace").Scriptable.NPC.Quest
 
     local nameMap = {
         ["1"] = "[100 Strength]",
@@ -103,6 +104,7 @@ return function(Tabs, Fluent)
         return false
     end
 
+    -- === Training Areas Dropdown ===
     local teleportDropdown = Tabs.Teleports:AddDropdown("TrainingAreaTeleport", {
         Title = "Training Areas",
         Values = getTrainingAreaDisplayNames(),
@@ -152,13 +154,79 @@ return function(Tabs, Fluent)
         end
     })
 
-    -- Auto-refresh dropdown every 5 seconds
+    -- Auto-refresh training areas
     spawn(function()
         while wait(5) do
             local newValues = getTrainingAreaDisplayNames()
             if #newValues > 0 then
                 teleportDropdown:Refresh(newValues, true)
             end
+        end
+    end)
+
+    -- === NEW: Quest NPCs Dropdown ===
+    Tabs.Teleports:AddParagraph({
+        Title = "Quest NPCs",
+        Content = "Select a quest NPC below to teleport directly to it."
+    })
+
+    local function getQuestNPCs()
+        local npcs = {}
+        for _, npc in ipairs(questFolder:GetChildren()) do
+            if npc:IsA("Model") or npc:IsA("BasePart") then
+                table.insert(npcs, npc.Name)
+            end
+        end
+        table.sort(npcs)
+        return npcs
+    end
+
+    local questDropdown = Tabs.Teleports:AddDropdown("QuestNPCs", {
+        Title = "Quest NPCs",
+        Values = getQuestNPCs(),
+        Multi = false,
+        Default = 1,
+        Callback = function(selectedName)
+            local npc = questFolder:FindFirstChild(selectedName)
+            if not npc then
+                Fluent:Notify({Title = "Error", Content = "NPC not found or not loaded yet.", Duration = 5})
+                return
+            end
+
+            local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+            local hrp = character:FindFirstChild("HumanoidRootPart")
+            if not hrp then
+                Fluent:Notify({Title = "Error", Content = "Character not loaded!", Duration = 5})
+                return
+            end
+
+            local targetCFrame
+            if npc:IsA("Model") then
+                if npc:FindFirstChild("HumanoidRootPart") then
+                    targetCFrame = npc.HumanoidRootPart.CFrame
+                elseif npc.PrimaryPart then
+                    targetCFrame = npc.PrimaryPart.CFrame
+                else
+                    local cf, _ = npc:GetBoundingBox()
+                    targetCFrame = cf
+                end
+            else
+                targetCFrame = npc.CFrame
+            end
+
+            hrp.CFrame = targetCFrame
+
+            Fluent:Notify({Title = "Teleported", Content = "To " .. selectedName, Duration = 3})
+
+            -- Refresh list after teleport
+            questDropdown:Refresh(getQuestNPCs(), true)
+        end
+    })
+
+    -- Auto-refresh quest NPCs every 10 seconds
+    spawn(function()
+        while wait(10) do
+            questDropdown:Refresh(getQuestNPCs(), true)
         end
     end)
 
