@@ -27,8 +27,19 @@ return function(Tabs, Fluent)
         "Krampus",
         "1MVisits",
         "10kLikes",
-        "ChristmasTime"
-        -- Add new codes here!
+        "ChristmasTime",
+        -- New codes added January 2026
+        "HappyNewYear",
+        "50kLikes",
+        "10MVisits",
+        "NewBloodlines",
+        "NewSpecials",
+        "MinorBugs",
+        "BadActors",
+        "JanuaryIncident",
+        "15kLikes",
+        "25kLikes",
+        "30kLikes"
     }
 
     Tabs.Codes:AddButton({
